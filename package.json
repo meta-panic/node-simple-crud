@@ -1,0 +1,29 @@
+{
+  "name": "crud",
+  "version": "1.0.0",
+  "description": "4th homework for rs-school",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start:dev:single": "nodemon --no-warnings=ExperimentalWarning --exec node --loader ts-node/esm src/index.ts",
+    "start:prod:single": "npm run build && node ./dist/index.js",
+    "build": "tsc",
+    "start:dev:multi": "",
+    "start:prod:multi": "",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "nodemon": "^3.1.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "ts-node": "^10.9.2"
+  }
+}
