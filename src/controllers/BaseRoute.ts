@@ -1,14 +1,15 @@
-import { ExecuteFnType, IRoute, SupportedMethod } from "./route.interface.js";
+import { ExecuteFnType, IRoute, PathMatcher, SupportedMethod, validatePath } from "./Route.interface.js";
+
 
 export class BaseRoute implements IRoute {
-  private matcher: string;
+  private matcher: PathMatcher;
   private requestMethod: SupportedMethod;
   execute: ExecuteFnType;
 
   constructor({ method, matcher, execute }: { method: SupportedMethod, matcher: string, execute: ExecuteFnType }) {
-    this.matcher = matcher;
+    this.matcher = validatePath(matcher);
     this.requestMethod = method;
-    this.execute = execute
+    this.execute = execute;
   }
 
   public match(url: string, reqMethod: string): boolean {
@@ -16,7 +17,7 @@ export class BaseRoute implements IRoute {
       return false;
     }
 
-    if (url.match(new RegExp(`^${this.matcher.replace(/\{[^}]+\}/g, '[^/]+')}$`))) {
+    if (url.match(new RegExp(`^${this.matcher.replace(/\{[^}]+\}/g, "[^/]+")}$`))) {
       return true;
     }
 
