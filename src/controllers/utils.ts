@@ -1,15 +1,21 @@
 import * as http from "node:http";
 import { IRoute } from "./Route.interface.js";
+import { validate as uuidValidate } from "uuid";
+import { ControllerError } from "./errors.js";
 
 
-export function getUserIdFromUrl(url: string | undefined): string | null {
-  if (!url) return null;
-  const parts = url.split("/");
-  // Example: /api/users/123 -> 123
-  if (parts.length >= 3 && parts[parts.length - 2] === "users") {
-    return parts[parts.length - 1];
+export function getUserIdFromUrlIfValid(url: string | undefined): string | null {
+  if (!url) {
+    throw new Error("Missing uuid");
   }
-  return null;
+  const parts = url.split("/");
+  const userId = parts[parts.length - 1];
+
+  if (!uuidValidate(userId)) {
+    throw new ControllerError({ errorCode: 400, message: "Invalid user ID format. Expected UUID v4" });
+  }
+
+  return userId;
 }
 
 
@@ -55,9 +61,9 @@ export function injectRoutes(
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(
       JSON.stringify({
-        message: "Route Not Found"
+        message: `${req.url} Route Not Found`
       })
     );
+    console.error(`Request ${req.url} weren't handled by any existing route.`);
   }
-
 }

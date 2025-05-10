@@ -1,10 +1,11 @@
 import * as http from "node:http";
-import { v4 as uuidv4 } from "uuid";
 
 import { IBaseController } from "../../controllers/BaseController.interface.js";
 import { BaseRoute } from "../../controllers/BaseRoute.js";
-import { getUserIdFromUrl, parseJSONBody } from "../../controllers/utils.js";
-import { DBService, DBUser } from "../services/DBService.js";
+import { getUserIdFromUrlIfValid, parseJSONBody } from "../../controllers/utils.js";
+import { DBService } from "../services/DBService.js";
+import { responceOnError } from "../../decorators/errorHandler.js";
+import { ControllerError } from "../../controllers/errors.js";
 
 export class DBController implements IBaseController {
   routers: BaseRoute[];
@@ -19,7 +20,7 @@ export class DBController implements IBaseController {
         execute: this.getAllUsers.bind(this)
       }),
       new BaseRoute({
-        matcher: "/get/user/{userId}",
+        matcher: "/get/users/{userId}",
         method: "GET",
         execute: this.getUser.bind(this)
       }),
@@ -41,126 +42,79 @@ export class DBController implements IBaseController {
     ];
   }
 
-  // TODO: add decorators for error handling
+  @responceOnError({ errorCode: 500, errorMessage: "Internal Server Error" })
   async getAllUsers(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
-    try {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      const users = JSON.stringify(await this.DBService.findAll());
-      res.end(users);
-    } catch (error) {
-      console.error("Error in getAllUsers:", error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Internal Server Error" }));
-    }
+    const users = JSON.stringify(await this.DBService.findAll());
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(users);
   }
 
+  @responceOnError({ errorCode: 500, errorMessage: "Internal Server Error" })
   async getUser(req: http.IncomingMessage, res: http.ServerResponse) {
-    try {
-      const userId = getUserIdFromUrl(req.url);
-      if (!userId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "User ID is missing or invalid in URL" }));
-        return;
-      }
-      const user = this.DBService.findById(userId);
-
-      if (user) {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(user));
-      } else {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: `User with id ${userId} not found` }));
-      }
-    } catch (error) {
-      console.error("Error in getUser:", error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Internal Server Error" }));
+    const userId = getUserIdFromUrlIfValid(req.url);
+    if (!userId) {
+      throw new ControllerError({ errorCode: 400, message: "User ID is missing or invalid in URL" });
     }
+
+    const user = await this.DBService.findById(userId);
+    if (!user) {
+      throw new ControllerError({ errorCode: 404, message: `User with id ${userId} not found` });
+    }
+
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(user));
   }
 
+  @responceOnError({ errorCode: 500, errorMessage: "Internal Server Error" })
   async createUser(req: http.IncomingMessage, res: http.ServerResponse) {
-    try {
-      const { username, age, hobbies } = await parseJSONBody<{ username: string, age: number, hobbies: string[] }>(req);
+    const { username, age, hobbies } = await parseJSONBody<{ username: string, age: number, hobbies: string[] }>(req);
 
-      if (!username || typeof age !== "number" || !Array.isArray(hobbies)) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Missing required fields (username, age, hobbies) or invalid types" }));
-        return;
-      }
-
-      const newUser: DBUser = {
-        id: uuidv4(),
-        username,
-        age,
-        hobbies
-      };
-      this.DBService.create(newUser);
-
-      res.writeHead(201, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(newUser));
-    } catch (error) {
-      console.error("Error in createUser:", error);
-
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Internal Server Error" }));
+    if (!username || typeof age !== "number" || !Array.isArray(hobbies)) {
+      throw new ControllerError({ errorCode: 400, message: "Missing required fields (username, age, hobbies) or invalid types}" });
     }
+
+    const createdUser = await this.DBService.create({ username, age, hobbies });
+
+    res.writeHead(201, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(createdUser));
   }
 
+  @responceOnError({ errorCode: 500, errorMessage: "Internal Server Error" })
   async replaceUser(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
-    try {
-      const userId = getUserIdFromUrl(req.url);
-      if (!userId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "User ID is missing or invalid in URL" }));
-        return;
-      }
+    const { username, age, hobbies } = await parseJSONBody<{ username: string, age: number, hobbies: string[] }>(req);
 
-
-      const user = await this.DBService.findById(userId);
-
-      if (user) {
-        res.writeHead(404, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: `User with id ${userId} not found` }));
-        return;
-      }
-
-      const { username, age, hobbies } = await parseJSONBody<{ username: string, age: number, hobbies: string[] }>(req);
-
-      if (typeof username !== "string" || typeof age !== "number" || !Array.isArray(hobbies)) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "Invalid data format: username (string), age (number), hobbies (array) are required." }));
-        return;
-      }
-
-      const updatedUser = this.DBService.replace(userId, { username, age, hobbies });
-
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(updatedUser));
-    } catch (error) {
-      console.error("Error in replaceUser:", error);
-
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Internal Server Error" }));
+    if (typeof username !== "string" || typeof age !== "number" || !Array.isArray(hobbies)) {
+      throw new ControllerError({ errorCode: 400, message: "Invalid data format: username (string), age (number), hobbies (array) are required." });
     }
+
+    const userId = getUserIdFromUrlIfValid(req.url);
+    if (!userId) {
+      throw new ControllerError({ errorCode: 400, message: "User ID is missing or invalid in URL" });
+    }
+
+    const user = await this.DBService.findById(userId);
+    if (!user) {
+      throw new ControllerError({ errorCode: 404, message: `User with id ${userId} not found` });
+    }
+
+    const updatedUser = await this.DBService.replace(userId, { username, age, hobbies });
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(updatedUser));
   }
 
+  @responceOnError({ errorCode: 500, errorMessage: "Internal Server Error" })
   async deleteUser(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
-    try {
-      const userId = getUserIdFromUrl(req.url);
-      if (!userId) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "User ID is missing or invalid in URL" }));
-        return;
-      }
-
-      await this.DBService.delete(userId);
-
-      res.writeHead(204, { "Content-Type": "application/json" });
-      res.end();
-    } catch (error) {
-      console.error("Error in deleteUser:", error);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Internal Server Error" }));
+    const userId = getUserIdFromUrlIfValid(req.url);
+    if (!userId) {
+      throw new ControllerError({ errorCode: 400, message: "Invalid uuid" });
     }
+
+    await this.DBService.delete(userId);
+
+    res.writeHead(204, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ message: `User with id ${userId} were deleted` }));
   }
 }

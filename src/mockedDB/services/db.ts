@@ -24,10 +24,11 @@ export class UserDatabase {
 
   public create(userData: Omit<DBUser, "id">): DBUser {
     const newUser: DBUser = {
-      id: this.generateUUID(),
-      ...userData
+      ...userData,
+      id: this.generateUUID()
     };
     this.users.push(newUser);
+
     return { ...newUser };
   }
 
@@ -54,6 +55,7 @@ export class UserDatabase {
   public delete(id: string): boolean {
     const initialLength = this.users.length;
     this.users = this.users.filter(u => u.id !== id);
+
     return this.users.length < initialLength; // True if a user was deleted
   }
 }
