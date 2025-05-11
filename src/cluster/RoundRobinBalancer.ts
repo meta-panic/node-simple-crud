@@ -13,7 +13,7 @@ export class RoundRobinBalancer implements ILoadBalancer {
 
   constructor({ balancerPort = 5000 }) {
     this.balancerPort = balancerPort;
-    this.numCPUs = os.cpus().length;
+    this.numCPUs = os.cpus().length - 1;
     this.workerPorts = new Map<number, number>();
     this.currentWorkerIndex = 0;
   }
