@@ -1,4 +1,4 @@
-import { ExecuteFnType, IRoute, PathMatcher, SupportedMethod, validatePath } from "./Route.interface.js";
+import { ExecuteFnType, IRoute, PathMatcher, SupportedMethod, validatePath } from "./Route.interface";
 
 
 export class BaseRoute implements IRoute {

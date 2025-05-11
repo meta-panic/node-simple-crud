@@ -1,5 +1,5 @@
 import * as http from "node:http";
-import { IRoute } from "./Route.interface.js";
+import { IRoute } from "./Route.interface";
 
 
 export function getUserIdFromUrl(url: string | undefined): string | null {

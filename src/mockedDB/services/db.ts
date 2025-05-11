@@ -1,6 +1,6 @@
 import { v4 } from "uuid";
 
-import { DBUser } from "./DBService.js";
+import { DBUser } from "./DBService";
 
 export class UserDatabase {
   private users: DBUser[] = [];

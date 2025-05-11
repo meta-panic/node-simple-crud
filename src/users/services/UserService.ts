@@ -1,7 +1,7 @@
 import { validate as IsUuidValid } from "uuid";
 
-import { ServerError } from "../../controllers/errors.js";
-import { IBaseService } from "../../services/IBaseService.interface.js";
+import { ServerError } from "../../controllers/errors";
+import { IBaseService } from "../../services/IBaseService.interface";
 
 export interface User {
   id: string;

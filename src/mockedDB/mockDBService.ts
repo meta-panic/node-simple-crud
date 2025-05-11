@@ -1,8 +1,8 @@
 import * as http from "node:http";
 
-import { injectRoutes } from "../controllers/utils.js";
-import { DBController } from "./controllers/DBController.js";
-import { DBService } from "./services/DBService.js";
+import { injectRoutes } from "../controllers/utils";
+import { DBController } from "./controllers/DBController";
+import { DBService } from "./services/DBService";
 
 
 export function mockDBService() {

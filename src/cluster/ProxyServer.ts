@@ -1,6 +1,6 @@
 import "dotenv/config";
 import * as http from "node:http";
-import { ILoadBalancer } from "./LoadBalancer.interface.js";
+import { ILoadBalancer } from "./LoadBalancer.interface";
 
 
 interface ProxyServerConstructor { port: number, targetHostname: string, loadBalancer: ILoadBalancer };

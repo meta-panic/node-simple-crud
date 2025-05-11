@@ -1,26 +1,35 @@
-import { resolve as _resolve } from 'path';
+import { fileURLToPath } from "url";
+import path from 'path';
 
-const __dirname = import.meta.dirname;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export default (env, argv) => {
-  return {
-    mode: argv.mode,
-    entry: './src/index.ts',
-    output: {
-      path: _resolve(__dirname, 'dist'),
-      filename: 'bundle.js',
-    },
-    module: {
-      rules: [
-        {
-          test: /\.ts$/,
-          use: 'ts-loader',
-          exclude: /node_modules/,
+export default () => {
+    return {
+        entry: './src/index.ts',
+        output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: 'bundle.js',
+            module: true,
+            library: {
+                type: 'module',
+            },
         },
-      ],
-    },
-    resolve: {
-      extensions: ['.ts', '.js'],
-    }
-  };
-}; 
+        experiments: {
+            outputModule: true,
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.ts$/,
+                    use: 'ts-loader',
+                    exclude: [/node_modules/, /\.(test)\.ts$/]
+                },
+            ],
+        },
+        resolve: {
+            extensions: ['.ts', '.js'],
+        },
+        target: 'node',
+    };
+};

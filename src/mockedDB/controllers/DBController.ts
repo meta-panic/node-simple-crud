@@ -1,11 +1,11 @@
 import * as http from "node:http";
 
-import { IBaseController } from "../../controllers/BaseController.interface.js";
-import { BaseRoute } from "../../controllers/BaseRoute.js";
-import { getUserIdFromUrl, parseJSONBody } from "../../controllers/utils.js";
-import { DBService } from "../services/DBService.js";
-import { responceOnError } from "../../decorators/errorHandler.js";
-import { ServerError } from "../../controllers/errors.js";
+import { IBaseController } from "../../controllers/BaseController.interface";
+import { BaseRoute } from "../../controllers/BaseRoute";
+import { getUserIdFromUrl, parseJSONBody } from "../../controllers/utils";
+import { DBService } from "../services/DBService";
+import { responceOnError } from "../../decorators/errorHandler";
+import { ServerError } from "../../controllers/errors";
 
 export class DBController implements IBaseController {
   routers: BaseRoute[];

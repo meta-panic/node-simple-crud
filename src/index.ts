@@ -1,14 +1,14 @@
 import "dotenv/config";
 
-import getAppArgs from "./utils/ArgParser.js";
+import getAppArgs from "./utils/ArgParser";
 
 
 const args = getAppArgs(process.argv, "mode");
 
 if (args === "single") {
-  await import("./runSingle.js");
+  await import("./runSingle");
 } else if (args === "multi") {
-  await import("./runMulti.js");
+  await import("./runMulti");
 } else {
   console.error("Incorrect app arguments:", args);
 }

@@ -1,7 +1,7 @@
 import * as http from "node:http";
 
-import { IRoute } from "./controllers/Route.interface.js";
-import { injectRoutes } from "./controllers/utils.js";
+import { IRoute } from "./controllers/Route.interface";
+import { injectRoutes } from "./controllers/utils";
 
 
 export class App {

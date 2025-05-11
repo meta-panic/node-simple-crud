@@ -1,4 +1,4 @@
-import { IRoute } from "./Route.interface.js";
+import { IRoute } from "./Route.interface";
 
 export interface IBaseController {
   routers: IRoute[];

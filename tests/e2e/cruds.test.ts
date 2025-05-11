@@ -1,13 +1,11 @@
 import request from "supertest";
-import { mockDBService } from "../../src/mockedDB/mockDBService.js";
-import { App } from "../../src/server.js";
-import { UserController } from "../../src/users/controllers/UserController.js";
-import { UserService } from "../../src/users/services/UserService.js";
+import { mockDBService } from "../../src/mockedDB/mockDBService";
+import { App } from "../../src/server";
+import { UserController } from "../../src/users/controllers/UserController";
+import { UserService } from "../../src/users/services/UserService";
 import * as http from "node:http";
-import { jest } from "@jest/globals";
 
 
-const uuidV4Pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 describe("Users API E2E Tests", () => {
   let appServer: http.Server;

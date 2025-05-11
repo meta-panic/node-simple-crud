@@ -1,12 +1,12 @@
 import "dotenv/config";
 import cluster from "node:cluster";
 
-import { App } from "./server.js";
-import { UserController } from "./users/controllers/UserController.js";
-import { mockDBService } from "./mockedDB/mockDBService.js";
-import { UserService } from "./users/services/UserService.js";
-import { RoundRobinBalancer } from "./cluster/RoundRobinBalancer.js";
-import { ProxyServer } from "./cluster/ProxyServer.js";
+import { App } from "./server";
+import { UserController } from "./users/controllers/UserController";
+import { mockDBService } from "./mockedDB/mockDBService";
+import { UserService } from "./users/services/UserService";
+import { RoundRobinBalancer } from "./cluster/RoundRobinBalancer";
+import { ProxyServer } from "./cluster/ProxyServer";
 
 // Init one instance of DB
 let dbService = mockDBService();

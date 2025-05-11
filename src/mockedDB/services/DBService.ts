@@ -1,6 +1,6 @@
-import { ServerError } from "../../controllers/errors.js";
-import { IBaseService } from "../../services/IBaseService.interface.js";
-import { UserDatabase } from "./db.js";
+import { ServerError } from "../../controllers/errors";
+import { IBaseService } from "../../services/IBaseService.interface";
+import { UserDatabase } from "./db";
 
 export interface DBUser {
   id: string;

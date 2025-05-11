@@ -2,7 +2,7 @@ import "dotenv/config";
 import cluster, { Worker } from "node:cluster";
 import os from "node:os";
 
-import { ILoadBalancer } from "./LoadBalancer.interface.js";
+import { ILoadBalancer } from "./LoadBalancer.interface";
 
 
 export class RoundRobinBalancer implements ILoadBalancer {

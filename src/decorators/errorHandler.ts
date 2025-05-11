@@ -1,5 +1,5 @@
 import * as http from "node:http";
-import { ServerError } from "../controllers/errors.js";
+import { ServerError } from "../controllers/errors";
 
 interface ErrorHandlerOptions {
   errorCode: number;

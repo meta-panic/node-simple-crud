@@ -6,10 +6,10 @@
   "type": "module",
   "scripts": {
     "start:dev:single": "nodemon --no-warnings=ExperimentalWarning --exec node --loader ts-node/esm src/index.ts -- --mode=single",
-    "start:prod:single": "npm run build && node ./dist/src/index.js -- --mode=single",
-    "build": "tsc",
+    "start:prod:single": "npm run build && node ./dist/bundle.js -- --mode=single",
+    "build": "webpack --mode production",
     "start:dev:multi": "nodemon --no-warnings=ExperimentalWarning --exec node --loader ts-node/esm src/index.ts -- --mode=multi",
-    "start:prod:multi": "npm run build && node ./dist/src/index.js -- --mode=multi",
+    "start:prod:multi": "npm run build && node ./dist/bundle.js -- --mode=multi",
     "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./jest.e2e.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint ."
@@ -29,6 +29,7 @@
     "nodemon": "^3.1.10",
     "supertest": "^7.1.0",
     "ts-jest": "^29.3.2",
+    "ts-loader": "^9.5.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.0",

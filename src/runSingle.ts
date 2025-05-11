@@ -1,9 +1,9 @@
 import "dotenv/config";
 
-import { App } from "./server.js";
-import { UserController } from "./users/controllers/UserController.js";
-import { mockDBService } from "./mockedDB/mockDBService.js";
-import { UserService } from "./users/services/UserService.js";
+import { App } from "./server";
+import { UserController } from "./users/controllers/UserController";
+import { mockDBService } from "./mockedDB/mockDBService";
+import { UserService } from "./users/services/UserService";
 
 
 const dbService = mockDBService();
