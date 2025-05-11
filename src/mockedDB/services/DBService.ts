@@ -1,4 +1,4 @@
-import { ControllerError } from "../../controllers/errors.js";
+import { ServerError } from "../../controllers/errors.js";
 import { IBaseService } from "../../services/IBaseService.interface.js";
 import { UserDatabase } from "./db.js";
 
@@ -23,7 +23,7 @@ export class DBService implements IBaseService<DBUser> {
   public async findById(id: string): Promise<DBUser> {
     const user = this.dbUsers.findById(id);
     if (!user) {
-      throw new ControllerError({ errorCode: 404, message: `User with id ${id} not found` });
+      throw new ServerError({ errorCode: 404, message: `User with id ${id} not found` });
     }
 
     return Promise.resolve({ ...user });
@@ -33,7 +33,7 @@ export class DBService implements IBaseService<DBUser> {
     userData: { username: string, age: number, hobbies: string[] }
   ): Promise<DBUser> {
     if (!userData.username || typeof userData.age !== "number" || !Array.isArray(userData.hobbies)) {
-      throw new ControllerError({ errorCode: 400, message: "Invalid data format for update: username (string), age (number), hobbies (array) are required." });
+      throw new ServerError({ errorCode: 400, message: "Invalid data format for update: username (string), age (number), hobbies (array) are required." });
     }
 
     const newUser: Omit<DBUser, "id"> = {
@@ -47,7 +47,7 @@ export class DBService implements IBaseService<DBUser> {
 
   public async replace(id: string, data: { username: string, age: number, hobbies: string[] }): Promise<DBUser | undefined> {
     if (typeof data.username !== "string" || typeof data.age !== "number" || !Array.isArray(data.hobbies)) {
-      throw new ControllerError({ errorCode: 400, message: "Invalid data format for update: username (string), age (number), hobbies (array) are required." });
+      throw new ServerError({ errorCode: 400, message: "Invalid data format for update: username (string), age (number), hobbies (array) are required." });
     }
 
     const perlacedUser = this.dbUsers.replace(id, data);
@@ -58,13 +58,13 @@ export class DBService implements IBaseService<DBUser> {
   public async delete(userId: string): Promise<void> {
     const user = this.dbUsers.findById(userId);
     if (!user) {
-      throw new ControllerError({ errorCode: 404, message: `User with id ${userId} not found` });
+      throw new ServerError({ errorCode: 404, message: `User with id ${userId} not found` });
     }
 
     if (this.dbUsers.delete(userId)) {
       return Promise.resolve();
     } else {
-      throw new ControllerError({ errorCode: 400, message: `Error during deleting ${userId} user` });
+      throw new ServerError({ errorCode: 400, message: `Error during deleting ${userId} user` });
     }
   }
 }

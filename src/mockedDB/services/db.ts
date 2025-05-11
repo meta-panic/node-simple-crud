@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 } from "uuid";
 
 import { DBUser } from "./DBService.js";
 
@@ -9,9 +9,7 @@ export class UserDatabase {
     this.users = [...initialUsers];
   }
 
-  private generateUUID(): string {
-    return uuidv4();
-  }
+
 
   public findAll(): DBUser[] {
     return [...this.users];
@@ -25,7 +23,7 @@ export class UserDatabase {
   public create(userData: Omit<DBUser, "id">): DBUser {
     const newUser: DBUser = {
       ...userData,
-      id: this.generateUUID()
+      id: v4()
     };
     this.users.push(newUser);
 

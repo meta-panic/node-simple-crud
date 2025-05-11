@@ -1,4 +1,6 @@
-import { ControllerError } from "../../controllers/errors.js";
+import { validate as IsUuidValid } from "uuid";
+
+import { ServerError } from "../../controllers/errors.js";
 import { IBaseService } from "../../services/IBaseService.interface.js";
 
 export interface User {
@@ -23,10 +25,9 @@ export class UserService implements IBaseService<User> {
       }
     });
 
-
     if (!response.ok) {
       const errorData = await response.json();
-      throw new ControllerError({
+      throw new ServerError({
         message: errorData.message || `Failed to find all users: ${response.statusText}`,
         errorCode: response.status,
         cause: errorData.cause
@@ -38,6 +39,10 @@ export class UserService implements IBaseService<User> {
   }
 
   public async findById(id: string): Promise<User> {
+    if (!IsUuidValid(id)) {
+      throw new ServerError({ message: "Invalid user ID format. Expected UUID v4", errorCode: 400 });
+    }
+
     const response = await fetch(`${this.DBurl}/get/users/${id}`, {
       method: "GET",
       headers: {
@@ -47,7 +52,7 @@ export class UserService implements IBaseService<User> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new ControllerError({
+      throw new ServerError({
         message: errorData.message || `Failed to find user by id: ${response.statusText}`,
         errorCode: response.status,
         cause: errorData.cause
@@ -55,7 +60,7 @@ export class UserService implements IBaseService<User> {
     }
 
     if (!response) {
-      throw new ControllerError({ message: `User with id ${id} not found`, errorCode: 500 });
+      throw new ServerError({ message: `User with id ${id} not found`, errorCode: 500 });
     }
 
     return await response.json();
@@ -65,7 +70,7 @@ export class UserService implements IBaseService<User> {
     userData: { username: string, age: number, hobbies: string[] }
   ): Promise<User> {
     if (!userData.username || typeof userData.age !== "number" || !Array.isArray(userData.hobbies)) {
-      throw new Error("Username, age (number), and hobbies (array) are required.");
+      throw new ServerError({ message: "Username, age (number), and hobbies (array) are required.", errorCode: 400 });
     }
 
     const response = await fetch(`${this.DBurl}/create/users`, {
@@ -78,7 +83,7 @@ export class UserService implements IBaseService<User> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new ControllerError({
+      throw new ServerError({
         message: errorData.message || `Failed to create user: ${response.statusText}`,
         errorCode: response.status,
         cause: errorData.cause
@@ -91,7 +96,11 @@ export class UserService implements IBaseService<User> {
 
   public async replace(id: string, data: { username: string, age: number, hobbies: string[] }): Promise<User> {
     if (typeof data.username !== "string" || typeof data.age !== "number" || !Array.isArray(data.hobbies)) {
-      throw new Error("Invalid data format for update: username (string), age (number), hobbies (array) are required.");
+      throw new ServerError({ message: "Invalid data format for update: username (string), age (number), hobbies (array) are required.", errorCode: 400 });
+    }
+
+    if (!IsUuidValid(id)) {
+      throw new ServerError({ message: "Invalid user ID format. Expected UUID v4", errorCode: 400 });
     }
 
     const response = await fetch(`${this.DBurl}/replace/users/${id}`, {
@@ -104,7 +113,7 @@ export class UserService implements IBaseService<User> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new ControllerError({
+      throw new ServerError({
         message: errorData.message || `Failed to replace user: ${response.statusText}`,
         errorCode: response.status,
         cause: errorData.cause
@@ -116,6 +125,10 @@ export class UserService implements IBaseService<User> {
   }
 
   public async delete(userId: string): Promise<void> {
+    if (!IsUuidValid(userId)) {
+      throw new ServerError({ message: "Invalid user ID format. Expected UUID v4", errorCode: 400 });
+    }
+
     const response = await fetch(`${this.DBurl}/delete/users/${userId}`, {
       method: "DELETE",
       headers: {
@@ -125,7 +138,7 @@ export class UserService implements IBaseService<User> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new ControllerError({
+      throw new ServerError({
         message: errorData.message || `Failed to delete user: ${response.statusText}`,
         errorCode: response.status,
         cause: errorData.cause

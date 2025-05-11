@@ -5,8 +5,8 @@ import { BaseRoute } from "../../controllers/BaseRoute.js";
 import { IBaseService } from "../../services/IBaseService.interface.js";
 import { User } from "../services/UserService.js";
 import { responceOnError } from "../../decorators/errorHandler.js";
-import { getUserIdFromUrlIfValid } from "../../controllers/utils.js";
-import { ControllerError } from "../../controllers/errors.js";
+import { getUserIdFromUrl } from "../../controllers/utils.js";
+import { ServerError } from "../../controllers/errors.js";
 
 export class UserController implements IBaseController {
   routers: BaseRoute[];
@@ -52,23 +52,23 @@ export class UserController implements IBaseController {
     res.end(JSON.stringify(users));
   }
 
-  @responceOnError({ errorCode: 404, errorMessage: "User not found" })
+  @responceOnError({ errorCode: 500, errorMessage: "User not found" })
   async getUser(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
-    const uuid = getUserIdFromUrlIfValid(req.url);
+    const uuid = getUserIdFromUrl(req.url);
     if (!uuid) {
-      throw new ControllerError({ message: "Incorrect or missing id", errorCode: 400 });
+      throw new ServerError({ message: "Missing id", errorCode: 400 });
     }
 
-    const userId = await this.userService.findById(uuid);
-    if (!userId) {
-      throw new Error("User ID is required");
+    const user = await this.userService.findById(uuid);
+    if (!user) {
+      throw new ServerError({ message: "User does not exist", errorCode: 404 });
     }
 
     res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(userId));
+    res.end(JSON.stringify(user));
   }
 
-  @responceOnError({ errorCode: 400, errorMessage: "Invalid request data" })
+  @responceOnError({ errorCode: 500, errorMessage: "Invalid request data" })
   async createUser(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
     const body = await new Promise<string>((resolve, reject) => {
       let data = "";
@@ -86,7 +86,7 @@ export class UserController implements IBaseController {
     res.end(JSON.stringify(newUser));
   }
 
-  @responceOnError({ errorCode: 400, errorMessage: "Invalid request data" })
+  @responceOnError({ errorCode: 500, errorMessage: "Invalid request data" })
   async replaceUser(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
     const body = await new Promise<string>((resolve, reject) => {
       let data = "";
@@ -97,9 +97,9 @@ export class UserController implements IBaseController {
       req.on("error", reject);
     });
 
-    const uuid = getUserIdFromUrlIfValid(req.url);
+    const uuid = getUserIdFromUrl(req.url);
     if (!uuid) {
-      throw new ControllerError({ message: "Not uuid: Incorrect or missing id", errorCode: 400 });
+      throw new ServerError({ message: "Missing id", errorCode: 400 });
     }
 
     const updatedUser = await this.userService.replace(uuid, JSON.parse(body));
@@ -108,16 +108,16 @@ export class UserController implements IBaseController {
     res.end(JSON.stringify(updatedUser));
   }
 
-  @responceOnError({ errorCode: 400, errorMessage: "Invalid request data" })
+  @responceOnError({ errorCode: 500, errorMessage: "Invalid request data" })
   async deleteUser(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
-    const uuid = getUserIdFromUrlIfValid(req.url);
+    const uuid = getUserIdFromUrl(req.url);
     if (!uuid) {
-      throw new ControllerError({ message: "Not uuid: Incorrect or missing id", errorCode: 400 });
+      throw new ServerError({ message: "Not uuid: Incorrect or missing id", errorCode: 400 });
     }
 
     await this.userService.delete(uuid);
 
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(`User with ${uuid} id were deleted`);
+    res.writeHead(204, { "Content-Type": "application/json" });
+    res.end();
   }
 }

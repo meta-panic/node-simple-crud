@@ -1,19 +1,13 @@
 import * as http from "node:http";
 import { IRoute } from "./Route.interface.js";
-import { validate as uuidValidate } from "uuid";
-import { ControllerError } from "./errors.js";
 
 
-export function getUserIdFromUrlIfValid(url: string | undefined): string | null {
+export function getUserIdFromUrl(url: string | undefined): string | null {
   if (!url) {
     throw new Error("Missing uuid");
   }
   const parts = url.split("/");
   const userId = parts[parts.length - 1];
-
-  if (!uuidValidate(userId)) {
-    throw new ControllerError({ errorCode: 400, message: "Invalid user ID format. Expected UUID v4" });
-  }
 
   return userId;
 }

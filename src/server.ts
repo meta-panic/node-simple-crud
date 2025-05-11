@@ -23,15 +23,17 @@ export class App {
     return this;
   }
 
-  startServer(): void {
+  startServer(port?: string): http.Server {
     this.server = http.createServer((req, res) => {
       if (this.routes?.length) {
         injectRoutes(this.routes, req, res);
       };
     });
 
-    const MAIN_PORT = process.env.MAIN_PORT;
+    const MAIN_PORT = port || process.env.MAIN_PORT;
 
     this.server.listen(MAIN_PORT, () => console.info(`Server running on port ${MAIN_PORT}...`));
+
+    return this.server;
   }
 }

@@ -2,10 +2,10 @@ import * as http from "node:http";
 
 import { IBaseController } from "../../controllers/BaseController.interface.js";
 import { BaseRoute } from "../../controllers/BaseRoute.js";
-import { getUserIdFromUrlIfValid, parseJSONBody } from "../../controllers/utils.js";
+import { getUserIdFromUrl, parseJSONBody } from "../../controllers/utils.js";
 import { DBService } from "../services/DBService.js";
 import { responceOnError } from "../../decorators/errorHandler.js";
-import { ControllerError } from "../../controllers/errors.js";
+import { ServerError } from "../../controllers/errors.js";
 
 export class DBController implements IBaseController {
   routers: BaseRoute[];
@@ -52,14 +52,14 @@ export class DBController implements IBaseController {
 
   @responceOnError({ errorCode: 500, errorMessage: "Internal Server Error" })
   async getUser(req: http.IncomingMessage, res: http.ServerResponse) {
-    const userId = getUserIdFromUrlIfValid(req.url);
+    const userId = getUserIdFromUrl(req.url);
     if (!userId) {
-      throw new ControllerError({ errorCode: 400, message: "User ID is missing or invalid in URL" });
+      throw new ServerError({ errorCode: 400, message: "User ID is missing or invalid in URL" });
     }
 
     const user = await this.DBService.findById(userId);
     if (!user) {
-      throw new ControllerError({ errorCode: 404, message: `User with id ${userId} not found` });
+      throw new ServerError({ errorCode: 404, message: `User with id ${userId} not found` });
     }
 
 
@@ -72,7 +72,7 @@ export class DBController implements IBaseController {
     const { username, age, hobbies } = await parseJSONBody<{ username: string, age: number, hobbies: string[] }>(req);
 
     if (!username || typeof age !== "number" || !Array.isArray(hobbies)) {
-      throw new ControllerError({ errorCode: 400, message: "Missing required fields (username, age, hobbies) or invalid types}" });
+      throw new ServerError({ errorCode: 400, message: "Missing required fields (username, age, hobbies) or invalid types}" });
     }
 
     const createdUser = await this.DBService.create({ username, age, hobbies });
@@ -86,17 +86,17 @@ export class DBController implements IBaseController {
     const { username, age, hobbies } = await parseJSONBody<{ username: string, age: number, hobbies: string[] }>(req);
 
     if (typeof username !== "string" || typeof age !== "number" || !Array.isArray(hobbies)) {
-      throw new ControllerError({ errorCode: 400, message: "Invalid data format: username (string), age (number), hobbies (array) are required." });
+      throw new ServerError({ errorCode: 400, message: "Invalid data format: username (string), age (number), hobbies (array) are required." });
     }
 
-    const userId = getUserIdFromUrlIfValid(req.url);
+    const userId = getUserIdFromUrl(req.url);
     if (!userId) {
-      throw new ControllerError({ errorCode: 400, message: "User ID is missing or invalid in URL" });
+      throw new ServerError({ errorCode: 400, message: "User ID is missing or invalid in URL" });
     }
 
     const user = await this.DBService.findById(userId);
     if (!user) {
-      throw new ControllerError({ errorCode: 404, message: `User with id ${userId} not found` });
+      throw new ServerError({ errorCode: 404, message: `User with id ${userId} not found` });
     }
 
     const updatedUser = await this.DBService.replace(userId, { username, age, hobbies });
@@ -107,9 +107,9 @@ export class DBController implements IBaseController {
 
   @responceOnError({ errorCode: 500, errorMessage: "Internal Server Error" })
   async deleteUser(req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage>) {
-    const userId = getUserIdFromUrlIfValid(req.url);
+    const userId = getUserIdFromUrl(req.url);
     if (!userId) {
-      throw new ControllerError({ errorCode: 400, message: "Invalid uuid" });
+      throw new ServerError({ errorCode: 400, message: "Invalid uuid" });
     }
 
     await this.DBService.delete(userId);

@@ -1,5 +1,5 @@
 import * as http from "node:http";
-import { ControllerError } from "../controllers/errors.js";
+import { ServerError } from "../controllers/errors.js";
 
 interface ErrorHandlerOptions {
   errorCode: number;
@@ -26,11 +26,10 @@ export function responceOnError(options: ErrorHandlerOptions) {
           : options.errorMessage || "Internal Server Error";
 
 
-        res.writeHead(error instanceof ControllerError ? error.code : options.errorCode, { "Content-Type": "application/json" });
+        res.writeHead(error instanceof ServerError ? error.code : options.errorCode, { "Content-Type": "application/json" });
         res.end(JSON.stringify({
           message: errorMessage,
-          errorCode: error instanceof ControllerError ? error.code : options.errorCode
-          //error: error instanceof Error ? error.stack : error
+          errorCode: error instanceof ServerError ? error.code : options.errorCode
         }));
       }
     };
