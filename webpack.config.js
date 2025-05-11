@@ -1,11 +1,8 @@
 import { resolve as _resolve } from 'path';
 
+const __dirname = import.meta.dirname;
+
 export default (env, argv) => {
-  const isProduction = argv.mode === 'production';
-  const isDevelopment = argv.mode === 'development';
-
-  console.log(`Running Webpack in ${argv.mode} mode.`);
-
   return {
     mode: argv.mode,
     entry: './src/index.ts',
