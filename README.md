@@ -82,3 +82,63 @@ The following endpoints are available under the `/api/users` path:
 *   **`DELETE /api/users/{userId}`**: Delete a user by their ID.
 
 Refer to the assignment specifications for details on expected status codes and error responses.
+
+
+## API Usage Examples (cURL)
+
+
+### 1. Get All Users
+
+```bash
+curl --request GET \
+  --url http://localhost:4000/api/users \
+  --header 'User-Agent: insomnia/11.1.0'
+```
+
+### 2. Create a New User
+
+```bash
+curl --request POST \
+  --url http://localhost:4000/api/users \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0' \
+  --data '{
+	"username": "Jean Doe",
+	"age": 33,
+	"hobbies": ["knitting", "fighting with Joe"]
+}
+'
+```
+
+
+### 3. Get user by id
+
+```bash
+curl --request GET \
+  --url http://localhost:4000/api/users/be77989e-9c21-4ed0-8d80-570e92dfb3fa \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0'
+```
+
+### 4. Delete user by id
+
+```bash
+curl --request DELETE \
+  --url http://localhost:4000/api/users/973085e9-f934-4a95-b08c-2f730fde3bb3 \
+  --header 'User-Agent: insomnia/11.1.0'
+```
+
+### 5. Replace user by id
+
+```bash
+curl --request PUT \
+  --url http://localhost:4000/api/users/cb0856a9-d112-4e7c-a1a6-f7825df75534 \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0' \
+  --data '{
+	"username": "Joe Doe",
+	"age": 30,
+	"hobbies": ["video games", "football"]
+}
+'
+```
