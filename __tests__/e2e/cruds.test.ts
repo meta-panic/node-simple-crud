@@ -46,7 +46,7 @@ describe("Users API E2E Tests", () => {
       expect(response.body).toEqual([]);
     });
 
-    it("Server should answer with status code 200 and all users records(no records)", async () => {
+    it("Server should answer with status code 200 and all users records(2 records)", async () => {
       const dummyUser1 = {
         username: "John Doe",
         age: 30,
