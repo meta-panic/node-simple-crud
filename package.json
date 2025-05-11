@@ -5,11 +5,11 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "start:dev:single": "nodemon --no-warnings=ExperimentalWarning --exec node --loader ts-node/esm src/index.ts",
-    "start:prod:single": "npm run build && node ./dist/index.js",
+    "start:dev:single": "nodemon --no-warnings=ExperimentalWarning --exec node --loader ts-node/esm src/index.ts -- --mode=single",
+    "start:prod:single": "npm run build && node ./dist/index.js -- --mode=single",
     "build": "tsc",
-    "start:dev:multi": "",
-    "start:prod:multi": "",
+    "start:dev:multi": "nodemon --no-warnings=ExperimentalWarning --exec node --loader ts-node/esm src/index.ts -- --mode=multi",
+    "start:prod:multi": "npm run build && node ./dist/index.js -- --mode=multi",
     "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./jest.e2e.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint ."

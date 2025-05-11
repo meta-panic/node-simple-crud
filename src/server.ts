@@ -15,8 +15,16 @@ export class App {
     return this;
   }
 
-  initDB(dbServer: http.Server, PORT: string): this {
+  setDB(dbServer: http.Server): this {
     this.DBserver = dbServer;
+
+    return this;
+  }
+
+  startDB(PORT: string): this {
+    if (!this.DBserver) {
+      throw new Error("No DB were initialized.");
+    }
 
     this.DBserver.listen(PORT, () => console.info(`Db server running on port ${PORT}...`));
 
@@ -25,6 +33,7 @@ export class App {
 
   startServer(port?: string): http.Server {
     this.server = http.createServer((req, res) => {
+      console.log(`[PID: ${process.pid}] Handling request: ${req.method} ${req.url}`);
       if (this.routes?.length) {
         injectRoutes(this.routes, req, res);
       };

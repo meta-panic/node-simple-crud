@@ -27,7 +27,8 @@ describe("Users API E2E Tests", () => {
 
     appServer = new App()
       .registerRoutes(userController.routers)
-      .initDB(dbServer, DB_PORT)
+      .setDB(dbServer)
+      .startDB(DB_PORT)
       .startServer(MAIN_PORT);
   });
 
