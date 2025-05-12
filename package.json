@@ -1,0 +1,44 @@
+{
+  "name": "crud",
+  "version": "1.0.0",
+  "description": "4th homework for rs-school",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start:dev:single": "nodemon --no-warnings=ExperimentalWarning --exec node --experimental-specifier-resolution=node --loader ts-node/esm src/index.ts -- --mode=single",
+    "start:prod:single": "npm run build && node ./dist/bundle.js -- --mode=single",
+    "build": "webpack --mode production",
+    "start:dev:multi": "nodemon --no-warnings=ExperimentalWarning --exec node --experimental-specifier-resolution=node --loader ts-node/esm src/index.ts -- --mode=multi",
+    "start:prod:multi": "npm run build && node ./dist/bundle.js -- --mode=multi",
+    "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./jest.e2e.config.ts",
+    "lint": "eslint . ",
+    "lint:fix": "eslint ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@jest/types": "^29.6.3",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.17",
+    "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.5",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.3.2",
+    "ts-loader": "^9.5.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.0",
+    "webpack": "^5.99.8",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "ts-node": "^10.9.2",
+    "uuid": "^11.1.0"
+  }
+}

@@ -1,70 +1,144 @@
-# CRUD API Project (crud)
+# CRUD API Project
 
-This project is the 4th homework for rs-school, implementing a basic CRUD (Create, Read, Update, Delete) API.
+This project is a Node.js application implementing a CRUD (Create, Read, Update, Delete) API for managing user data. It supports running in both single-instance mode and a multi-threaded mode utilizing the Node.js Cluster API with a load balancer.
 
-## Prerequisites
+This project was developed as part of the RS School Node.js course.
 
-Before you begin, ensure you have met the following requirements:
-*   You have installed [Node.js](https://nodejs.org/) (which includes npm). It's recommended to use a recent LTS version.
-*   You can also use [Yarn](https://yarnpkg.com/) as an alternative to npm if you prefer.
 
 ## Installation
 
 1.  Clone the repository:
     ```bash
-    git clone <your-repository-url>
-    cd crud
-    ```
-2.  Install the dependencies:
-    ```bash
-    npm install
-    ```
-    or if you use Yarn:
-    ```bash
-    yarn install
+    git clone https://github.com/meta-panic/node-simple-crud.git
     ```
 
-## Environment Variables
-
-This project uses environment variables for configuration.
-1.  Create a `.env` file in the root of the project by copying the example file:
+2.  Install dependencies:
     ```bash
-    cp .env.example .env
+    npm i
     ```
-2.  Modify the `.env` file with your specific configuration values (e.g., `MAIN_PORT`).
+
+## Configuration
+
+1.  Create a `.env` file in the root of the project by copying the example file or creating it from scratch:
+    ```
+    # .env
+    MAIN_PORT=4000
+    DB_PORT=1234
+    ```
+
+2.  Key environment variables:
+    *   `MAIN_PORT`: The base port for the application. In single mode, the application listens on this port. In multi-mode, the load balancer listens on this port.
+    *   `DB_PORT` (Example): If your database (or mock database service) runs as a separate process, specify its port here. Workers will need to connect to this.
 
 ## Running the Application
 
-### Development Mode
+### Single Instance Mode
 
-To run the application in development mode with automatic reloading on file changes (using `nodemon` and `ts-node`):
-```bash
-npm run start:dev:single
-```
-The server will typically start on the port specified by `MAIN_PORT` in your `.env` file (defaulting to the value in `.env.example` if not set).
-
-### Production Mode
-
-To build the application and run it in production mode:
-1.  Build the TypeScript code:
+*   **Development (with Nodemon for auto-restarts):**
     ```bash
-    npm run build
+    npm run start:dev:single
     ```
-    This will compile the TypeScript files from `src/` into JavaScript files in the `dist/` directory.
+    The application will run on the `PORT` specified in your `.env` file.
 
-2.  Start the server:
+*   **Production:**
     ```bash
     npm run start:prod:single
     ```
-    This command first runs the build script and then starts the server using the compiled JavaScript from the `dist/` directory.
 
-## Available Scripts
+### Multi-threaded Mode (with Load Balancer)
 
-In the `package.json` file, the following scripts are available:
+This mode starts multiple worker instances and a load balancer.
 
-*   `npm run start:dev:single`: Starts the application in development mode with `nodemon`.
-*   `npm run start:prod:single`: Builds the application and then starts it in production mode.
-*   `npm run build`: Compiles TypeScript to JavaScript.
-*   `npm test`: (Currently echoes an error message - to be implemented)
+*   **Development (with Nodemon for auto-restarts):**
+    ```bash
+    npm run start:dev:multi
+    ```
+    The load balancer will listen on `PORT` (e.g., 4000).
+    Worker processes will be started on `PORT + n` (e.g., 4001, 4002, ...). The number of workers will be `(number of CPU cores - 1)`.
 
-## Project Structure (Simplified)
+*   **Production:**
+    ```bash
+    npm run start:prod:multi
+    ```
+
+## Running Tests
+
+End-to-End tests are configured using Jest and Supertest.
+
+```bash
+npm run test:e2e
+```
+
+## API Endpoints
+
+The following endpoints are available under the `/api/users` path:
+
+*   **`GET /api/users`**: Get all users.
+*   **`GET /api/users/{userId}`**: Get a specific user by their ID.
+*   **`POST /api/users`**: Create a new user.
+    *   Request Body: `{ "username": "string", "age": "number", "hobbies": ["string"] }`
+*   **`PUT /api/users/{userId}`**: Update an existing user by their ID.
+    *   Request Body: `{ "username": "string", "age": "number", "hobbies": ["string"] }`
+*   **`DELETE /api/users/{userId}`**: Delete a user by their ID.
+
+Refer to the assignment specifications for details on expected status codes and error responses.
+
+
+## API Usage Examples (cURL)
+
+
+### 1. Get All Users
+
+```bash
+curl --request GET \
+  --url http://localhost:4000/api/users \
+  --header 'User-Agent: insomnia/11.1.0'
+```
+
+### 2. Create a New User
+
+```bash
+curl --request POST \
+  --url http://localhost:4000/api/users \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0' \
+  --data '{
+	"username": "Jean Doe",
+	"age": 33,
+	"hobbies": ["knitting", "fighting with Joe"]
+}
+'
+```
+
+
+### 3. Get user by id
+
+```bash
+curl --request GET \
+  --url http://localhost:4000/api/users/be77989e-9c21-4ed0-8d80-570e92dfb3fa \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0'
+```
+
+### 4. Delete user by id
+
+```bash
+curl --request DELETE \
+  --url http://localhost:4000/api/users/973085e9-f934-4a95-b08c-2f730fde3bb3 \
+  --header 'User-Agent: insomnia/11.1.0'
+```
+
+### 5. Replace user by id
+
+```bash
+curl --request PUT \
+  --url http://localhost:4000/api/users/cb0856a9-d112-4e7c-a1a6-f7825df75534 \
+  --header 'Content-Type: application/json' \
+  --header 'User-Agent: insomnia/11.1.0' \
+  --data '{
+	"username": "Joe Doe",
+	"age": 30,
+	"hobbies": ["video games", "football"]
+}
+'
+```
