@@ -11,7 +11,7 @@
     "start:dev:multi": "nodemon --no-warnings=ExperimentalWarning --exec node --loader ts-node/esm src/index.ts -- --mode=multi",
     "start:prod:multi": "npm run build && node ./dist/bundle.js -- --mode=multi",
     "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./jest.e2e.config.ts",
-    "lint": "eslint .",
+    "lint": "eslint . ",
     "lint:fix": "eslint ."
   },
   "author": "",
